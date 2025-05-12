@@ -1,0 +1,99 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://192.168.8.65:3100/loki/api/v1/push
+
+scrape_configs:
+  # Логи Nginx
+  - job_name: nginx
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: nginx
+          __path__: /var/log/nginx/*.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<ip>\S+) \S+ \S+ \[(?P<timestamp>.+)\] "(?P<method>\S+) (?P<path>\S+) \S+" (?P<status>\d+)'
+      - labels:
+          method:
+          status:
+          path:
+
+  # Системные логи
+  - job_name: syslog
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: syslog
+          __path__: /var/log/syslog
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\w{3} \d{2} \d{2}:\d{2}:\d{2}) (?P<host>\S+) (?P<service>\S+)(?:\[(?P<pid>\d+)\])?: (?P<message>.*)'
+      - labels:
+          service:
+      - timestamp:
+          source: timestamp
+          format: "Jan _2 15:04:05"
+
+  # Логи MySQL
+  - job_name: mysql
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: mysql
+          __path__: /var/log/mysql/error.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<thread_id>\d+) \[(?P<log_level>\w+)\] (?P<message>.*)'
+      - labels:
+          log_level:
+
+  # Логи PHP-FPM
+  - job_name: php
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: php
+          __path__: /var/log/php/*.log
+    pipeline_stages:
+      - regex:
+          expression: '^\[(?P<timestamp>.*?)\] (?P<log_level>\w+): (?P<message>.*)'
+      - labels:
+          log_level:
+
+  # Логи ядра (Kernel)
+  - job_name: kernel
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: kernel
+          __path__: /var/log/kern.log
+
+  # Логи аутентификации
+  - job_name: auth
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: auth
+          __path__: /var/log/auth.log
+
+  # Логи cron
+  - job_name: cron
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: cron
+          __path__: /var/log/cron.log
+
+  # Общие системные сообщения (для RHEL/CentOS)
+  - job_name: messages
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: messages
+          __path__: /var/log/messages
