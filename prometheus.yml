@@ -53,9 +53,9 @@ scrape_configs:
       - targets: ['localhost:9113']  # Порт Nginx Exporter
 
   # Конфигурация для PHP-FPM Exporter
-#  - job_name: 'php-fpm_exporter'
-#    static_configs:
-#      - targets: ['localhost:9253']  # Порт PHP-FPM Exporter
+ - job_name: 'php-fpm_exporter'
+   static_configs:
+    - targets: ['localhost:9253']  # Порт PHP-FPM Exporter
 
 rule_files:
   - /etc/prometheus/alertmanager-0.27.0.linux-amd64/alerts.yml
