@@ -67,5 +67,6 @@ Alertmanager был настроен для обработки и маршрут
 ![scrin3](https://github.com/user-attachments/assets/171016de-1bb8-4f56-a513-adf121458cd8)
 ![scrin4](https://github.com/user-attachments/assets/63414df8-a30e-4b9a-88c4-fbcb60694679)
 
+![scrin00](https://github.com/user-attachments/assets/7f4fdfcc-9210-4556-a019-efec669d44e2)
 
 
