@@ -23,13 +23,9 @@
 
 Система мониторинга и логирования:
 Prometheus 
-
 Promtail
-
 Alertmanager 
-
 Grafana
-
 Grafana Loki
 
 Rомпоненты мониторинга (Grafana, Loki) были развёрнуты в Docker-контейнерах для обеспечения изоляции и экномии ресурсов.
