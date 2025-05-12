@@ -7,7 +7,7 @@
 
 Платформа: VirtualBox 7.0
 
-ОС: Ubuntu Server 22.04 LTS
+ОС: Ubuntu 22.04 LTS
 
 Ресурсы: 2 ядра CPU, 8 ГБ RAM, 45 ГБ SSD
 
