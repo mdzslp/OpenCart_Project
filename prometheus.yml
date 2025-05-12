@@ -1,0 +1,61 @@
+global:
+  scrape_interval: 5s  # Интервал сбора метрик
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['localhost:9090']  # Порт Alertmanager
+
+remote_write:
+  - url: "http://localhost:8428/api/v1/write"
+    remote_timeout: 30s
+    # Оптимизация отправки метрик
+    queue_config:
+      capacity: 10000  # Емкость очереди для хранения образцов перед отправкой
+      max_samples_per_send: 1000  # Максимальное количество образцов, отправляемых за один запрос
+      max_shards: 10  # Максимальное количество потоков для параллельной отправки данных
+      min_shards: 1  # Минимальное количество потоков для отправки данных
+      min_backoff: 100ms  # Минимальная задержка между повторными попытками
+      max_backoff: 5s  # Максимальная задержка между повторными попытками
+    write_relabel_configs:
+      - source_labels: []
+        target_label: site
+        replacement: "prod"
+
+scrape_configs:
+  # Конфигурация для Node Exporter
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['localhost:9100']  # Порт Node Exporter
+
+  # Конфигурация для MySQL Exporter
+  - job_name: 'mysql_exporter'
+    static_configs:
+      - targets: ['localhost:9105']  # Порт MySQL Exporter
+
+  # Конфигурация для Blackbox Exporter
+  - job_name: 'blackbox_exporter'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://localhost:80  # Замените на адрес вашей CMS
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - target_label: __address__
+        replacement: localhost:9115  # Адрес Blackbox Exporter
+
+  # Конфигурация для Nginx Exporter
+  - job_name: 'nginx_exporter'
+    static_configs:
+      - targets: ['localhost:9113']  # Порт Nginx Exporter
+
+  # Конфигурация для PHP-FPM Exporter
+#  - job_name: 'php-fpm_exporter'
+#    static_configs:
+#      - targets: ['localhost:9253']  # Порт PHP-FPM Exporter
+
+rule_files:
+  - /etc/prometheus/alertmanager-0.27.0.linux-amd64/alerts.yml
